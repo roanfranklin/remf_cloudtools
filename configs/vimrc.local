@@ -1,0 +1,10 @@
+let g:skip_defaults_vim = 1
+
+syntax on
+"set cursorline
+"set number
+set mouse=
+
+"if has('mouse')
+"set mouse=r
+"endif
