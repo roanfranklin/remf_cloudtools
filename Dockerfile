@@ -2,7 +2,8 @@ FROM alpine/k8s:1.19.8
 
 RUN apk update && apk upgrade && apk add --no-cache \
     vim perl curl wget busybox-extras su-exec sudo \
-    docker-cli unzip libc6-compat apache2-utils openssh
+    docker-cli unzip libc6-compat apache2-utils openssh \
+    ansible
 
 RUN curl -L https://raw.githubusercontent.com/warrensbox/terraform-switcher/release/install.sh | bash
 
