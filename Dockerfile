@@ -5,7 +5,14 @@ RUN apk update && apk upgrade && apk add --no-cache \
     docker-cli unzip libc6-compat apache2-utils openssh \
     ansible
 
-RUN curl -L https://raw.githubusercontent.com/warrensbox/terraform-switcher/release/install.sh | bash
+#RUN curl -L https://raw.githubusercontent.com/warrensbox/terraform-switcher/release/install.sh | bash && tfswitch --latest
+RUN curl -L https://raw.githubusercontent.com/warrensbox/terraform-switcher/release/install.sh | bash 
+
+ENV TERRAFORM_VERSION 1.0.4
+RUN cd /usr/local/bin && \
+    curl https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_amd64.zip -o terraform_${TERRAFORM_VERSION}_linux_amd64.zip && \
+    unzip terraform_${TERRAFORM_VERSION}_linux_amd64.zip && \
+    rm terraform_${TERRAFORM_VERSION}_linux_amd64.zip
 
 ENV USER=remf
 ENV UID=1000
