@@ -1,12 +1,20 @@
-FROM alpine/k8s:1.19.8
+FROM ubuntu:20.04
 
-RUN apk update && apk upgrade && apk add --no-cache \
-    vim perl curl wget busybox-extras su-exec sudo \
-    docker-cli unzip libc6-compat apache2-utils openssh \
-    ansible
+ARG DEBIAN_FRONTEND=noninteractive
 
-#RUN curl -L https://raw.githubusercontent.com/warrensbox/terraform-switcher/release/install.sh | bash && tfswitch --latest
-RUN curl -L https://raw.githubusercontent.com/warrensbox/terraform-switcher/release/install.sh | bash 
+RUN apt update && apt install -y sudo \
+    vim wget gnupg2 perl curl \
+    docker unzip apache2-utils openssh-client \
+    ansible mysql-client python3-pip python3-dev
+
+RUN wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
+RUN echo "deb http://apt.postgresql.org/pub/repos/apt/ focal-pgdg main" | sudo tee  /etc/apt/sources.list.d/pgdg.list
+
+RUN apt update && apt -y install postgresql-11
+
+RUN curl -L https://dl.k8s.io/v1.10.6/bin/linux/amd64/kubectl -o /usr/local/bin/kubectl && chmod +x /usr/local/bin/kubectl
+
+RUN curl https://raw.githubusercontent.com/helm/helm/master/scripts/get > get_helm.sh && chmod 700 get_helm.sh && ./get_helm.sh
 
 ENV TERRAFORM_VERSION 1.0.4
 RUN cd /usr/local/bin && \
@@ -14,33 +22,24 @@ RUN cd /usr/local/bin && \
     unzip terraform_${TERRAFORM_VERSION}_linux_amd64.zip && \
     rm terraform_${TERRAFORM_VERSION}_linux_amd64.zip
 
+
 ENV USER=remf
 ENV UID=1000
 ENV GID=1000
 
-RUN test -z $(getent group $GID | cut -d: -f1) || \
-      groupmod -g $((GID+1000)) $(getent group $GID | cut -d: -f1)
-
-RUN addgroup -g "$GID" -S "$USER" && adduser \
-   --disabled-password \
-   -g "$GID" \
-   -D \
-   -s "/bin/bash" \
-   -h "/home/$USER" \
-   -u "$UID" \
-   -G "$USER" "$USER" && exit 0 ; exit 1
+RUN groupadd --gid ${GID} --non-unique ${USER}
+RUN useradd -rm -d /home/${USER} -s /bin/bash -g ${GID} -G sudo -u ${UID} ${USER}
 
 RUN echo "$USER ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
 
 RUN echo -e "\nset mouse=" >> /etc/vim/vimrc
 
-RUN pip3 install requests
+RUN pip3 install awscli
 
-COPY cloud_bin/remf_* /usr/local/sbin/
-RUN chmod +x /usr/local/sbin/remf_*
+USER ${USER}
 
-USER $USER
+RUN echo "PS1='\[\033[01;35m\][\u@\h\[\033[01;37m\] \W\[\033[01;35m\]]\$\[\033[00m\] '" >> /home/${USER}/.bashrc
 
-WORKDIR /home/$USER/projects
+WORKDIR /home/${USER}
 
 CMD exec /bin/bash -c "trap : TERM INT; sleep infinity & wait"
