@@ -17,21 +17,6 @@ cd ${DIR_ATUAL}
 
 ADD_INFO=""
 
-if [ ! -d "data" ]; then
-	echo -e "\n [ OPS ] Você está no diretório correto???\n         falta alguns arquivos e diretório:\n\n\t ! .env\n\t ! .kube\n\t ! .aws\n\n\t ! .ssh\n\t ! data\n\n"
-
-	read -p "Deseja transformar o \"${HN_PROJECT}\" em projeto? [ s | N ] " OP
-	case ${OP} in
-	  [sSyY]) echo -e "\nCriando os diretórios "data, .kube, .aws, .docker, .ssh" e o arquivo ".env"...\n"
-             mkdir .kube .aws .docker .ssh data
-             touch .env
-             ;;
-	  *) echo -e "\nAté mais!\n"
-             exit 0
-             ;;
-	esac
-fi
-
 if [ -f ".env" ]; then
    ADD_INFO="${ADD_INFO} --env-file .env"
 fi
@@ -43,13 +28,35 @@ for DIRECTORY in $DIR_MOUNTS; do
    fi
 done
 
+if [ ! -d "data" ]; then
+	echo -e "\n [ OPS ] Você está no diretório correto???\n         falta alguns arquivos e diretório:\n\n\t ! .env\n\t ! .kube\n\t ! .aws\n\t ! .ssh\n\t ! data\n\n"
+
+	read -p "Deseja transformar o \"${HN_PROJECT}\" em projeto? [ s | N ] " OP
+	case ${OP} in
+	  [sSyY]) echo -e "\nCriando os diretórios "data, .kube, .aws, .docker, .ssh" e o arquivo ".env"...\n"
+             mkdir .kube .aws .docker .ssh data
+             touch .env
+             touch .bash_history
+             ;;
+	  *) echo -e "\nAté mais!\n"
+             exit 0
+             ;;
+	esac
+fi
+
+if [ ! -f ".bash_history" ]; then
+   touch .bash_history
+fi
+
 echo -e "\nOBS.: Para funcionar o docker dentro do container, é preciso mudar as permissões do \"/var/run/docker.sock\" para 777.\n\n\tsudo chmod 777 /var/run/docker.sock\n"
 
 docker run --rm \
  --hostname "${HN_PROJECT}" ${ADD_INFO} \
+ --mount src="${DIR_ATUAL}/.bash_history",target=/home/remf/.bash_history,type=bind \
  --mount src="${DIR_DATA}",target=/home/remf/projects,type=bind \
- -e PS1='\[\033[01;35m\][\u@\h\[\033[01;37m\] \W\[\033[01;35m\]]\$\[\033[00m\] ' \
  -v /var/run/docker.sock:/var/run/docker.sock \
- --privileged -it roanfranklin/cloudtools:latest /bin/bash
+ --privileged -it roanfranklin/ubuntu:20.04 /bin/bash
 
+# --privileged -it roanfranklin/cloudtools:latest /bin/bash
+# -e PS1='\[\033[01;35m\][\u@\h\[\033[01;37m\] \W\[\033[01;35m\]]\$\[\033[00m\] ' \
 # -e PS1='\u@\h \W \$ ' \
