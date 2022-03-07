@@ -1,4 +1,23 @@
-Container com ferramentas para Cloud. aws-cli, eksctl, kubectl, docker-cli, helm, tfswitch, terraform, ansible, docker-cli, outros e alguns scritps para ajudar!
+Container com ferramentas para Cloud e serviços como:
+
+- aws-cli
+- gcloud
+- ecs-cli
+- eksctl
+- kubectl
+- docker-cli
+- helm
+- terraform
+- ansible
+- ...
+
+Também ten algums scripts que dentro do container para ajudar. Estão em */usr/loca/sbin/* e iniciam com *remf_*!
+
+- remf_aws_checklist_service.py
+- remf_aws_identify.sh
+- remf_k8s_force-delete-namespace.py
+- remf_k8s_yaml_lint.py
+- ...
 
 ### Apps - Requisitos
 
