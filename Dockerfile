@@ -9,7 +9,8 @@ RUN apt update && apt install -y sudo \
     docker unzip apache2-utils openssh-client \
     ansible mysql-client python3-pip python3-dev \
     git telnet iputils-ping \
-    apt-transport-https ca-certificates gnupg
+    apt-transport-https ca-certificates gnupg \
+    certbot
 
 # Install Google Cloud Console
 RUN echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] http://packages.cloud.google.com/apt cloud-sdk main" | tee -a /etc/apt/sources.list.d/google-cloud-sdk.list && curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | tee /usr/share/keyrings/cloud.google.gpg && apt-get update -y && apt-get install google-cloud-sdk -y
