@@ -5,9 +5,7 @@ import subprocess
 import sys
 import argparse
 
-ITEMS = {}
-EC2 = []
-RDS = []
+# RDS = []
 
 def get_all_regions():
    OUTPUT = subprocess.check_output("aws ec2 describe-regions --region us-east-1 --output text | cut -f4", shell=True)
@@ -28,13 +26,14 @@ def check_ec2_region(REGION):
               for tag in i['Tags']:
                   print('           {0}={1}'.format(tag['Key'], tag['Value']))
 
-def check_rds_region(REGION):
-   CMD = 'aws rds describe-db-instances --region {0}'.format(REGION)
-   OUTPUT = subprocess.check_output(CMD, shell=True)
-   DATA = json.loads(OUTPUT.decode('utf-8'))
-   if len(DATA['DBInstances']) > 0:
-      print('*', end='', flush=True)
-      RDS.append({ 'region': REGION, 'total': len(DATA['DBInstances'])})
+# def check_rds_region(REGION):
+#    CMD = 'aws rds describe-db-instances --region {0}'.format(REGION)
+#    OUTPUT = subprocess.check_output(CMD, shell=True)
+#    DATA = json.loads(OUTPUT.decode('utf-8'))
+#    if len(DATA['DBInstances']) > 0:
+#       print('*', end='', flush=True)
+#       RDS.append({ 'region': REGION, 'total': len(DATA['DBInstances'])})
+
 
 
 def main(argv):
