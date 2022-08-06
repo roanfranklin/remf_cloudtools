@@ -52,7 +52,8 @@ RUN echo "deb http://apt.postgresql.org/pub/repos/apt/ focal-pgdg main" | sudo t
 RUN apt update && apt -y install postgresql-11
 
 # Install kubectl ( Kubernetes )
-RUN curl -L https://dl.k8s.io/v1.10.6/bin/linux/amd64/kubectl -o /usr/local/bin/kubectl && chmod +x /usr/local/bin/kubectl
+#RUN curl -L https://dl.k8s.io/v1.10.6/bin/linux/amd64/kubectl -o /usr/local/bin/kubectl && chmod +x /usr/local/bin/kubectl
+RUN curl -o /usr/local/bin/kubectl https://s3.cn-north-1.amazonaws.com.cn/amazon-eks/1.22.6/2022-03-09/bin/linux/amd64/kubectl && chmod +x /usr/local/bin/kubectl
 
 # Install HELM
 RUN curl https://raw.githubusercontent.com/helm/helm/master/scripts/get > get_helm.sh && chmod 700 get_helm.sh && ./get_helm.sh
@@ -64,11 +65,10 @@ RUN curl -Lo /usr/local/bin/ecs-cli https://amazon-ecs-cli.s3.amazonaws.com/ecs-
 RUN curl --silent --location "https://github.com/weaveworks/eksctl/releases/latest/download/eksctl_$(uname -s)_amd64.tar.gz" | tar xz -C /tmp && mv /tmp/eksctl /usr/local/bin/eksctl && chmod +x /usr/local/bin/eksctl
 
 # Install Terraform
-ENV TERRAFORM_VERSION 1.0.4
-RUN cd /usr/local/bin && \
-    curl https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_amd64.zip -o terraform_${TERRAFORM_VERSION}_linux_amd64.zip && \
-    unzip terraform_${TERRAFORM_VERSION}_linux_amd64.zip && \
-    rm terraform_${TERRAFORM_VERSION}_linux_amd64.zip
+RUN wget -O- https://apt.releases.hashicorp.com/gpg | gpg --dearmor | sudo tee /usr/share/keyrings/hashicorp-archive-keyring.gpg && \
+    echo "deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/hashicorp.list && \
+sudo apt update && sudo apt install terraform -y
+
 
 # Install Ansible
 # Já está no primeiro apt install!
@@ -85,9 +85,9 @@ RUN useradd -rm -d /home/${USER} -s /bin/bash -g ${GID} -G sudo -u ${UID} ${USER
 
 RUN echo "$USER ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
 
-RUN echo -e "\nset mouse=" >> /etc/vim/vimrc
+RUN echo "set mouse=" >> /etc/vim/vimrc
 
-RUN pip3 install awscli
+RUN pip3 install awscli boto3
 
 USER ${USER}
 
