@@ -56,7 +56,8 @@ RUN apt update && apt -y install postgresql-11
 RUN curl -o /usr/local/bin/kubectl https://s3.cn-north-1.amazonaws.com.cn/amazon-eks/1.22.6/2022-03-09/bin/linux/amd64/kubectl && chmod +x /usr/local/bin/kubectl
 
 # Install HELM
-RUN curl https://raw.githubusercontent.com/helm/helm/master/scripts/get > get_helm.sh && chmod 700 get_helm.sh && ./get_helm.sh
+#RUN curl https://raw.githubusercontent.com/helm/helm/master/scripts/get > get_helm.sh && chmod 700 get_helm.sh && ./get_helm.sh
+RUN curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 && chmod 700 get_helm.sh && ./get_helm.sh
 
 # Install ECS-CLI ( AWS ecsctl )
 RUN curl -Lo /usr/local/bin/ecs-cli https://amazon-ecs-cli.s3.amazonaws.com/ecs-cli-linux-amd64-latest && chmod +x /usr/local/bin/ecs-cli
