@@ -55,7 +55,7 @@ docker run --rm \
  --mount src="${DIR_ATUAL}/.bash_history",target=/home/remf/.bash_history,type=bind \
  --mount src="${DIR_DATA}",target=/home/remf/projects,type=bind \
  -v /var/run/docker.sock:/var/run/docker.sock \
- --privileged -it roanfranklin/ubuntu:20.04 /bin/bash
+ --privileged -it roanfranklin/cloudtools:latest /bin/bash
 
 # --privileged -it roanfranklin/cloudtools:latest /bin/bash
 # -e PS1='\[\033[01;35m\][\u@\h\[\033[01;37m\] \W\[\033[01;35m\]]\$\[\033[00m\] ' \

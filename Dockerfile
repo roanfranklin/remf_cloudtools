@@ -6,11 +6,13 @@ ARG COMPOSE_DOCKER_CLI_BUILD=1
 
 RUN apt update && apt install -y sudo \
     vim wget gnupg2 perl curl \
-    docker unzip apache2-utils openssh-client \
+    unzip apache2-utils openssh-client \
     ansible mysql-client python3-pip python3-dev \
     git telnet iputils-ping \
     apt-transport-https ca-certificates gnupg \
     certbot
+
+RUN apt install apt-transport-https ca-certificates software-properties-common -y && curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add - && add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu focal stable" && add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu focal stable" && apt update && apt install docker-ce -y
 
 # Install Google Cloud Console
 RUN echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] http://packages.cloud.google.com/apt cloud-sdk main" | tee -a /etc/apt/sources.list.d/google-cloud-sdk.list && curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | tee /usr/share/keyrings/cloud.google.gpg && apt-get update -y && apt-get install google-cloud-sdk -y
@@ -77,12 +79,18 @@ sudo apt update && sudo apt install terraform -y
 COPY bin/remf_* /usr/local/sbin/ 
 RUN chmod 0755 /usr/local/sbin/remf_*
 
+COPY share /usr/local/share/
+RUN chmod 0755 /usr/local/share/remf-create-env-terraform/remf_create_env_terraform.py && sed -i s/".\/remf"/"\/usr\/local\/share\/remf-create-env-terraform\/remf"/ /usr/local/share/remf-create-env-terraform/remf_create_env_terraform.py
+RUN ln -s /usr/local/share/remf-create-env-terraform/remf_create_env_terraform.py /usr/local/sbin/remf_create_env_terraform.py
+
 ENV USER=remf
 ENV UID=1000
 ENV GID=1000
 
 RUN groupadd --gid ${GID} --non-unique ${USER}
 RUN useradd -rm -d /home/${USER} -s /bin/bash -g ${GID} -G sudo -u ${UID} ${USER}
+
+RUN usermod -aG docker ${USER}
 
 RUN echo "$USER ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
 
