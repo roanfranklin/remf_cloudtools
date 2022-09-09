@@ -1,0 +1,16 @@
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: racingcaranimation
+  namespace: apps
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - kind: Rule
+      match: Host(`app3.remf.net.br`)
+      services:
+        - name: racingcaranimation
+          port: 80
+  tls:
+    certResolver: aws

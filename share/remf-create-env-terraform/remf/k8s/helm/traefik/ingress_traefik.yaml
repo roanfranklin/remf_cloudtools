@@ -1,0 +1,20 @@
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: traefik-dashboard
+  namespace: kube-system
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`traefik.remf.net.br`) && PathPrefix(`/dashboard`) || Host(`traefik.remf.net.br`) && PathPrefix(`/api`)
+      kind: Rule
+      services:
+        - name: api@internal
+          kind: TraefikService
+#       Enable auth middleware
+      middlewares:
+        - name: auth-traefik
+  tls:
+    certResolver: aws

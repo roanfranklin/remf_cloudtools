@@ -1,0 +1,18 @@
+server:
+  insecure: true
+
+  ingress:
+    enabled: false
+  #   hosts: [argocd.remf.net.br]
+  #   annotations: {
+  #     "meta.helm.sh/release-name": "argcd",
+  #     "meta.helm.sh/release-namespace": "argocd-system"
+  #   }
+  #   labels: {
+  #     "app.kubernetes.io/component": "server",
+  #     "app.kubernetes.io/instance": "argcd",
+  #     "app.kubernetes.io/managed-by": "Helm",
+  #     "app.kubernetes.io/name": "argo-cd",
+  #     "helm.sh/chart": "argo-cd-4.0.6"
+  #   }
+  #   tls: true

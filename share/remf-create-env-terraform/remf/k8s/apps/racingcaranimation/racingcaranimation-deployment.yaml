@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: racingcaranimation
+spec:
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: "50%"
+      maxUnavailable: "50%"
+  replicas: 1
+  revisionHistoryLimit: 3
+  selector:
+    matchLabels:
+      app: racingcaranimation
+  template:
+    metadata:
+      labels:
+        app: racingcaranimation
+    spec:
+      containers:
+      - image: roanfranklin/racingcaranimation:latest
+        name: racingcaranimation
+        ports:
+        - containerPort: 80
+        resources:
+          requests:
+            memory: "64Mi"
+            cpu: "250m"
+          limits:
+            memory: "128Mi"
+            cpu: "500m"

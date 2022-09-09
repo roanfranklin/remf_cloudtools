@@ -1,0 +1,16 @@
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: guestbook-ui
+  namespace: apps
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - kind: Rule
+      match: Host(`app1.remf.net.br`)
+      services:
+        - name: guestbook-ui
+          port: 80
+  tls:
+    certResolver: aws

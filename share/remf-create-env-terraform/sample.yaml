@@ -1,0 +1,196 @@
+# YAML REMF Projects TERRAFORM
+
+project: pxco001
+aws_account: 012345678901
+region: us-east-2
+environment: dev
+s3_state: true
+services: 
+  network:
+    position: 1
+    service: network
+    active: true
+    cidr: 10.0.0.0/16
+    subnets_public: 2
+    subnets_private: 0
+    vpc_enable_dns_hostnames: true
+    vpc_enable_dns_support: true
+    vpc_assign_generated_ipv6_cidr_block: true
+  eks:
+    position: 2
+    service: eks
+    active: true
+    aws_users: [roan@cloudopss.com.br]
+    vpc:
+      active: true
+      # cidr: 10.1.0.0/16
+      # subnets_public: 2
+    worker_nodes:
+      instance_types: [t3.medium]
+    node_scaling_config: 
+      desired_size: 1
+      max_size: 1
+      min_size: 1
+    encryption_config:
+      resources: ["secrets"]
+      provider_kms:
+        deletion_window_in_days: 7
+        enable_key_rotation: true
+  ecr:
+    position: 3
+    service: ecr
+    active: true
+    repositories: 
+      app1:
+        active: true
+        image_tag_mutability: mutable
+        image_scanning:
+          scan_on_push: true
+      app2:
+        active: true
+        image_tag_mutability: mutable
+        image_scanning:
+          scan_on_push: true
+      app3:
+        active: true
+        image_tag_mutability: mutable
+        image_scanning:
+          scan_on_push: true
+  route53:
+    position: 4
+    service: route53
+    active: true
+    domain: meudominio.com.br
+    record:
+      root:
+        active: false
+        type: a
+        ttl: 300
+        records: [200.200.200.200]
+      www:
+        active: false
+        type: a
+        ttl: 300
+        records: [200.200.200.200]
+      home:
+        active: false
+        type: cname
+        ttl: 5
+        weighted_routing_policy:
+          weight: 10
+        set_identifier: www
+        records: [www.meudominio.com.br]
+      traefik:
+        active: true
+        type: alias
+        name: abcd123a456bc7def8a901a2b34c5d6e-1234567890.us-east-2.elb.amazonaws.com
+        zone_id: A0BCDEFG1HIJK2
+        evaluate_target_health: true
+      argocd:
+        active: true
+        type: alias
+        name: abcd123a456bc7def8a901a2b34c5d6e-1234567890.us-east-2.elb.amazonaws.com
+        zone_id: A0BCDEFG1HIJK2
+        evaluate_target_health: true
+      app1:
+        active: true
+        type: alias
+        name: abcd123a456bc7def8a901a2b34c5d6e-1234567890.us-east-2.elb.amazonaws.com
+        zone_id: A0BCDEFG1HIJK2
+        evaluate_target_health: true
+      app2:
+        active: true
+        type: alias
+        name: abcd123a456bc7def8a901a2b34c5d6e-1234567890.us-east-2.elb.amazonaws.com
+        zone_id: A0BCDEFG1HIJK2
+        evaluate_target_health: true
+      app3:
+        active: true
+        type: alias
+        name: abcd123a456bc7def8a901a2b34c5d6e-1234567890.us-east-2.elb.amazonaws.com
+        zone_id: A0BCDEFG1HIJK2
+        evaluate_target_health: true
+  mysql:
+    position: 5
+    active: true
+    service: rds
+    identifier: rds-dev-mysql
+    instance_class: db.t3.medium
+    allocated_storage: 40
+    max_allocated_storage: 100
+    rds_port: 3306
+    engine: mysql
+    engine_version: 5.7
+    parameter_group_name: default.mysql5.7
+    az: b
+    database: 'db_wordpress'
+    username: 'userwordpress'
+    password: 'W3#0Rd.Pr#5sS'
+    skip_final_snapshot: true
+    final_snapshot_identifier: rds-dev-mysql-001
+    backup_retention_period: 0
+    publicly_accessible: false
+    security_group_ingress:
+      ingress1:
+        active: true
+        description: 'ip do roan'
+        ipv4: 200.200.200.200./32
+        ports: [3306]
+        protocol: tcp
+  ec2:
+    position: 6
+    service: ec2
+    active: true
+    name: myubuntu2004
+    type: t2.micro
+    ami: ami-02f3416038bdb17fb
+    az: a
+    ssh_port: 7122
+    key_pair:
+      name: 'id_rsa_devops'
+      public_key: 'ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQDM4W8ozuKd835FRP4kx3t6Lg3dUhBf139I/u2f8h0PlgXOImyHJPUil++XXC8JtfkJEa4y/BSxkxrjbQLqeV5z81JvnLeYHTo5muAgs1IOZ1jgfmfUN2pO367V4F4QCNCUC80xmHor9IcuUgvPvJn8yCJPdcPK/aas6qqkOEo8DzQTWOcLxWrKxj+WmX6cpM4tt013wLkcDVN0FBQHBnRTay/ro0MyaNSno+WQN81yTs7BiYUUF/c0ZvtKeqav93xX0nxUY7vxT+pGSbvjnnJCjvTunc/YRvNhLqnsFmHfN75M/LMjxYgXpZM+vm6x+9QiTdLNJ2d6qabI3VvyTLyrbXNDJcHX1S1THNWM6cqcwym20mtCy1qSKstfLEg4xbceMqFIi6MS0KZ0vFuMFUFuhD5ooCMREaJbUbsVaSOsJIlbaU5Ec0+wwaeta7r9IkA1L77WZiJGKoYD+8EAL+R2hO/9lwSGmVjFV6l7i2XsthHPm7uRzqfRQQkSueAyaMkGi4AL1zcxltBpRFY9vTYe4yaKy8jarCeNY3LrX3LEhBlOESoR3YPVd23hI/vOnW1a6SY57y979/s9AEJEkbt0mFV/I+MPcqj/9fQ4iAC9mG93vXjbpWCuhyiGRIpuwwwQUBYFAofsjII00DaS3bN70vRZZxI8+EB5d1n98m6y0w== wordpress@cloudopss.com.br'
+    userdata:
+      script: 'script/bootstrap.sh'
+      env:
+        VAR_PORT_SSH: 
+          value: '${var.ssh_port}'
+        VAR_DIR_REMF:
+          value: '/remf'
+    security_group_ingress:
+        http:
+          active: true
+          description: 'http'
+          ipv4: 0.0.0.0/0
+          ports: [80]
+          protocol: tcp
+        https:
+          active: true
+          description: 'https'
+          ipv4: 0.0.0.0/0
+          ports: [443]
+          protocol: tcp
+        roan:
+          active: true
+          description: 'ip do roan'
+          ipv4: 201.201.201.201/32
+          ports: [5000]
+          protocol: tcp
+        fulano:
+          active: false
+          description: 'ip do fulano'
+          ipv4: 100.100.100.100/32
+          ports: [80,443,5000]
+          protocol: tcp
+  website:
+    position: 7
+    service: s3
+    active: true
+    bucket_name: website
+    force_destroy: false
+    bucket_backup: true
+    acl: public-read
+    website_configuration:
+      website: true
+      index_document: "index.html"
+      error_document: "404.html"
+output:
